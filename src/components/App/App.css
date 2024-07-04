@@ -1,9 +1,8 @@
-.app {
-    margin: 0 auto;
-    max-width: 1280px;
-    min-width: 320px;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
+.body {
+	margin: 0 auto;
+	background-color: var(--main-bg-color);
+	color: var(--main-text-color);
+	font-family: 'Inter', Arial, sans-serif;
+	font-style: normal;
+	height: 100%;
+}

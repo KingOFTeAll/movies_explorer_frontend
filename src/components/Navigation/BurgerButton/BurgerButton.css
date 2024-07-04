@@ -1,0 +1,21 @@
+.burger-button {
+	display: none;
+	padding: 0;
+	background-color: transparent;
+	border: 0;
+	cursor: pointer;
+	transition: opacity .3s ease-in-out;
+}
+
+.burger-button:hover {
+	opacity: .7;
+}
+
+@media screen and (max-width: 1024px) {
+	.burger-button {
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+	}
+}

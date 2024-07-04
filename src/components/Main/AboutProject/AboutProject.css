@@ -1,0 +1,163 @@
+.about {
+	padding: 110px 70px;
+	background-color: #202020;
+}
+
+.about__title {
+	margin: 0;
+	padding-bottom: 23px;
+	font-weight: 400;
+	line-height: 1.2;
+	letter-spacing: -0.88px;
+	font-size: 22px;
+	border-bottom: solid 1px #dadada;
+}
+
+.about__plan {
+	margin-top: 70px;
+	display: flex;
+	gap: 40px;
+}
+
+.about__subtitle {
+	margin: 0;
+	margin-bottom: 26px;
+	font-weight: 400;
+	line-height: 1.2;
+	letter-spacing: -0.8px;
+	font-size: 20px;
+}
+
+.about__text {
+	margin: 0;
+	font-weight: 400;
+	line-height: 20px;
+	font-size: 14px;
+}
+
+.about__progress {
+	margin-top: 110px;
+	display: flex;
+}
+
+.about__progress-column {
+	text-align: center;
+}
+
+.about__progress-column_type_first {
+	flex-basis: 228px;
+}
+
+.about__progress-column_type_other {
+	flex-grow: 1;
+}
+
+.about__week {
+	display: block;
+	padding: 9px 0 9px;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 1.2;
+}
+
+.about__week_type_first {
+	color: #000;
+	background-color: #3ddc84;
+}
+
+.about__week_type_other {
+	color: #fff;
+	background-color: #303030;
+}
+
+.about__week-title {
+	display: block;
+	margin-top: 14px;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 17px;
+	color: #8b8b8b;
+}
+
+@media screen and (max-width: 1024px) {
+	.about {
+		padding: 90px 50px;
+	}
+
+	.about__plan {
+		gap: 30px;
+	}
+
+	.about__subtitle {
+		margin-bottom: 22px;
+	}
+
+	.about__text {
+		line-height: 18px;
+		font-size: 12px;
+	}
+
+	.about__progress {
+		margin-top: 93px;
+	}
+
+	.about__progress-column_type_first {
+		flex-basis: 140px;
+	}
+
+	.about__week-title {
+		font-weight: 400;
+		font-size: 14px;
+		color: #A0A0A0;
+	}
+}
+
+@media screen and (max-width: 544px) {
+	.about {
+		padding: 70px 18px;
+	}
+
+	.about__title {
+		padding-bottom: 28px;
+		letter-spacing: -0.72px;
+		font-size: 18px;
+	}
+
+	.about__plan {
+		margin-top: 60px;
+		flex-direction: column;
+		gap: 56px;
+	}
+
+	.about__subtitle {
+		margin-bottom: 16px;
+		letter-spacing: -0.72px;
+		font-size: 18px;
+	}
+
+	.about__text {
+		line-height: 16px;
+		font-size: 11px;
+	}
+
+	.about__progress {
+		margin-top: 60px;
+	}
+
+	.about__progress-column_type_first {
+		flex-basis: 100px;
+	}
+	
+	.about__week {
+		padding: 11px 0 11px;
+		font-size: 11px;
+	}
+
+	.about__week-title {
+		margin-top: 10px;
+		font-weight: 400;
+		font-size: 11px;
+		line-height: 1.2;
+		color: #A0A0A0;
+	}
+}

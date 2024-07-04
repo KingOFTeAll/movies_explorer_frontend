@@ -1,43 +1,9 @@
-@import url(./vendor/normalize.css);
-@import url(./vendor/fonts/fonts.css);
+@import url('./vendor/normalize.css');
+@import url('./vendor/fonts/fonts.css');
 
-.body-style {
-  margin: 0 auto;
-  background-color: #ffffff;
-  font-family: 'Inter', 'Arial', sans-serif;
-}
-
-.main {
-  width: 100%;
-  min-height: 600px;
-}
-
-.link-transparency {
-  opacity: 1;
-  transition: opacity 0.2s;
-  cursor: pointer;
-}
-
-.link-transparency:hover {
-  opacity: 0.7;
-}
-
-.button-transparency {
-  opacity: 1;
-  transition: opacity 0.2s;
-  cursor: pointer;
-}
-
-.button-transparency:hover {
-  opacity: 0.8;
-}
-
-.saved-movies {
-  margin-bottom: 150px;
-}
-
-@media (max-width: 1050px) {
-  .saved-movies {
-    margin-bottom: 86px;
-  }
+:root {
+	--main-bg-color: #202020;
+	--main-text-color: #fff;
+	--promo-bg-color: #272727;
+	--techs-bg-color: #272727;
 }

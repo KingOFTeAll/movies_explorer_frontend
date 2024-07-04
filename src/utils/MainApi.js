@@ -1,151 +1,122 @@
-import { moviesExplorerApiConfig } from './constants.js';
+import { moviesUrl } from '../config/config'
+
+const mainApiOptions = {
+  baseUrl: "https://api.mymovies.nomoreparties.sbs",
+};
 
 class MainApi {
-  constructor({
-    server,
-    registerPath,
-    loginPath,
-    authCheckPath,
-    profileDataPath,
-    moviesDataPath,
-  }) {
-    this._server = server;
-    this._registerPath = registerPath;
-    this._loginPath = loginPath;
-    this._authCheckPath = authCheckPath;
-    this._profileDataPath = profileDataPath;
-    this._moviesDataPath = moviesDataPath;
+  constructor(options) {
+    this._baseUrl = options.baseUrl;
   }
 
-  //Метод отправки запроса к серверу
-  _requestServer(path, message) {
-    return fetch(path, message).then((res) => {
-      if (res.ok) return res.json();
-      return Promise.reject(res.json());
+  _checkResponseStatus(response, method) {
+    return response.ok
+      ? response.json()
+      : Promise.reject(`Ошибка в ${method}: ${response.status}`);
+  }
+
+  signup(userData) {
+    return fetch(`${this._baseUrl}/signup`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    }).then((res) => {
+      return this._checkResponseStatus(res, "signup");
     });
   }
 
-  //Метод регистрации пользователя
-  register({ name, email, password }) {
-    const path = this._server + this._registerPath;
-    const message = {
-      method: 'POST',
+  signin(userData) {
+    return fetch(`${this._baseUrl}/signin`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-      }),
-    };
-    return this._requestServer(path, message);
-  }
-
-  //Метод авторизации пользователя
-  login({ email, password }) {
-    const path = this._server + this._loginPath;
-    const message = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    };
-    return this._requestServer(path, message);
-  }
-
-  //Метод проверки авторизации пользователя
-  authCheck(token) {
-    const path = this._server + this._authCheckPath;
-    return this._requestServer(path, {
-      headers: { authorization: `Bearer ${token}` },
+      body: JSON.stringify(userData),
+    }).then((res) => {
+      return this._checkResponseStatus(res, "signin");
     });
   }
 
-  //Метод формирования запроса для изменения данных профиля
-  modifyProfileData({ name, email }, token) {
-    const path = this._server + this._profileDataPath;
-    const message = {
-      method: 'PATCH',
+  jwtCheck(token) {
+    return fetch(`${this._baseUrl}/users/me`, {
+      method: "GET",
       headers: {
-        authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        name,
-        email,
-      }),
-    };
-    return this._requestServer(path, message);
-  }
-
-  //Метод формирования запроса базы карточек
-  getSavedMovies(token) {
-    const path = this._server + this._moviesDataPath;
-    return this._requestServer(path, {
-      headers: { authorization: `Bearer ${token}` },
+    }).then((res) => {
+      return this._checkResponseStatus(res, "jwtCheck");
     });
   }
 
-  //Метод формирования запроса на добавление фильма
-  addSavedMovie(
-    {
-      country,
-      director,
-      duration,
-      year,
-      description,
-      image,
-      trailerLink,
-      thumbnail,
-      movieId,
-      nameRU,
-      nameEN,
-    },
-    token
-  ) {
-    const path = this._server + this._moviesDataPath;
-    const message = {
-      method: 'POST',
+  edit(name, email) {
+    return fetch(`${this._baseUrl}/users/me`, {
+      method: "PATCH",
       headers: {
-        authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        'Accept': "application/json",
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${localStorage.getItem("jwt")}`,
       },
       body: JSON.stringify({
-        country,
-        director,
-        duration,
-        year,
-        description,
-        image,
-        trailerLink,
-        thumbnail,
-        movieId,
-        nameRU,
-        nameEN,
-      }),
-    };
-    return this._requestServer(path, message);
+        "name": name,
+        "email": email,
+      })
+    }).then((res) => {
+      return this._checkResponseStatus(res, "edit");
+    });
   }
 
-  //Метод формирования запроса для удаления карточки
-  deleteSavedMovie({ movieId }, token) {
-    const path = this._server + this._moviesDataPath + `/${movieId}`;
-    console.log(path);
-    const message = {
-      method: 'DELETE',
+  save(movie) {
+    return fetch(`${this._baseUrl}/movies`, {
+      method: "POST",
       headers: {
-        authorization: `Bearer ${token}`,
+        'authorization': `Bearer ${localStorage.getItem("jwt")}`,
+        'Content-Type': 'application/json'
       },
-    };
-    return this._requestServer(path, message);
+      body: JSON.stringify({
+        country: movie.country,
+        director: movie.director,
+        duration: movie.duration,
+        year: movie.year,
+        description: movie.description,
+        image: `${moviesUrl}${movie.image.url}`,
+        trailerLink: movie.trailerLink,
+        thumbnail: `${moviesUrl}${movie.image.formats.thumbnail.url}`,
+        movieId: `${movie.id}`,
+        nameRU: movie.nameRU,
+        nameEN: movie.nameEN
+      })
+    }).then((res) => {
+      return this._checkResponseStatus(res, "save");
+    });
+  }
+
+  remove(movieId) {
+    return fetch(`${this._baseUrl}/movies/${movieId}`, {
+      method: "DELETE",
+      headers: {
+        'authorization': `Bearer ${localStorage.getItem("jwt")}`,
+        'Content-Type': 'application/json'
+      },
+    }).then((res) => {
+      return this._checkResponseStatus(res, "remove");
+    });
+  }
+
+  getInitialMovie() {
+    return fetch(`${this._baseUrl}/movies`, {
+      headers: {
+        'authorization': `Bearer ${localStorage.getItem("jwt")}`,
+        'Content-Type': 'application/json'
+      },
+    }).then((res) => {
+      return this._checkResponseStatus(res, "getInitialMovie");
+    });
   }
 }
 
-const mainApi = new MainApi(moviesExplorerApiConfig);
-
-export default mainApi;
+export const mainApi = new MainApi(mainApiOptions);

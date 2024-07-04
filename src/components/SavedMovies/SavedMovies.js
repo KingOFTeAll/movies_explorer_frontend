@@ -1,75 +1,53 @@
-import './SavedMovies.css';
-import React from 'react';
-import SearchForm from '../SearchForm/SearchForm';
-import Preloader from '../Preloader/Preloader';
-import MoviesCardList from '../MoviesCardList/MoviesCardList';
-import { searchMovies, checkQuery } from '../../utils/fncLib';
-import { SHORT } from '../../utils/constants';
+import "./SavedMovies.css";
+import SearchForm from "../SearchForm/SearchForm";
+import MoviesCardList from "../MoviesCardList/MoviesCardList";
+import { useState } from "react";
+import { mainApi } from "../../utils/MainApi";
+import { filterMovies } from "../../utils/utils";
 
-function SavedMovies(props) {
-  //Состояние чекбокса короткометражек
-  const [filterCheckboxState, setFilterCheckboxState] = React.useState(false);
+function SavedMovies({ onModal }) {
+  const [savedMoviesData, setSavedMoviesData] = useState(() => {
+    return JSON.parse(localStorage.getItem("savedMovie"))
+  })
+  const [searchedResult, setSearchedResult] = useState(savedMoviesData);
+  const [isNothingFound, setIsNothingFound] = useState(false);
 
-  //Состояние поля ввода запроса
-  const [searchQuerry, setSearchQuerry] = React.useState('');
+  function handleRemove(id) {
+    return mainApi.remove(id)
+      .then((res) => {
+        const newArr = savedMoviesData.filter((item) => item._id !== id)
+        setSavedMoviesData(newArr);
 
-  //Состояние поля ввода запроса
-  const [searchResult, setSearchResult] = React.useState([]);
-
-  //Идёт ли загрузка
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  //производит установку чекбокса в состояние state
-  function handleFilterCheckboxSwitch(newState) {
-    setFilterCheckboxState(newState);
+        const newArrResult = searchedResult.filter((item) => item._id !== id)
+        setSearchedResult(newArrResult);
+        localStorage.setItem("savedMovie", JSON.stringify(newArr));
+      })
+      .catch((err) => {
+        if (err === "Ошибка в remove: 400") {
+          onModal({ statusOk: false, text: "При удалении карточки произошла ошибка.", isOpen: true })
+        } else onModal({ statusOk: false, text: "Что-то пошло не так...", isOpen: true })
+      })
   }
 
-  //При изменении одной из зависимостей происходит обновление результатов поиска
-  React.useEffect(() => {
-    const result = searchMovies(props.savedMovies, searchQuerry);
-    setSearchResult(
-      filterCheckboxState ? result.filter((el) => el.duration < SHORT) : result
-    );
-    setIsLoading(false);
-  }, [searchQuerry, props.savedMovies, filterCheckboxState]);
-
-  //Обработчик поиска в форме
-  function handleSearchClick(queryString) {
-    if (checkQuery(queryString)) {
-      setIsLoading(true);
-      setSearchQuerry(queryString);
+  function searchMovies(querry, shorts) {
+    const currentSearchedResult = savedMoviesData.filter(movie => filterMovies(movie, querry, shorts));
+    if (currentSearchedResult.length === 0) {
+      setIsNothingFound(true);
+      setSearchedResult([]);
     } else {
-      props.showInfoTooltip('Нужно ввести ключевое слово', false);
+      setIsNothingFound(false);
+      console.log("Найденные после фильтрации фильмы:", currentSearchedResult);
+      setSearchedResult(currentSearchedResult);
     }
   }
 
   return (
-    <main className='main saved-movies'>
-      <SearchForm
-        handleSearch={handleSearchClick}
-        checkboxState={filterCheckboxState}
-        handleCheckboxSwitch={handleFilterCheckboxSwitch}
-        queryVal={searchQuerry}
-        drawSaved={true}
-      />
-      <div className='savedmovies'>
-        {isLoading ? (
-          <Preloader />
-        ) : searchResult.length === 0 ? (
-          (searchQuerry || filterCheckboxState) && (
-            <h2 className='savedmovies__nothingFound'>Ничего не найдено</h2>
-          )
-        ) : (
-          <MoviesCardList
-            drawSaved={true}
-            films={searchResult}
-            handleDeleteClick={props.handleDeleteClick}
-            fetching={props.fetching}
-          />
-        )}
-      </div>
+    <main className="saved-movies">
+      <SearchForm onSearch={searchMovies} />
+      <MoviesCardList onRemove={handleRemove} moviesData={searchedResult} />
+      {isNothingFound ? <span className="saved-movies__nothing">Ничего не найдено</span> : null}
     </main>
-  );
-}
+  )
+};
 
 export default SavedMovies;

@@ -1,33 +1,17 @@
-import './FilterCheckbox.css';
+import "./FilterCheckbox.css";
 
-function FilterCheckbox(props) {
-  function handleCheckboxChange() {
-    props.handleCheckboxSwitch(!props.checkboxState);
-  }
-
+function FilterCheckbox({ isChecked, checkHandler }) {
   return (
-    <div className='filter-checkbox'>
-      <label
-        id='chk-label'
-        className='filter-checkbox__label button-transparency'
-        aria-label='фильтр короткометражных фильмов'
-      >
-        <input
-          type='checkbox'
-          className='filter-checkbox__checkbox-hidden'
-          checked={props.checkboxState}
-          onChange={handleCheckboxChange}
-        />
-        <span
-          className='filter-checkbox__checkbox-custom'
-          role='checkbox'
-          aria-checked={props.checkboxState}
-          tabIndex='0'
-          aria-labelledby='chk-label'
-        />
-        Короткометражки
-      </label>
-    </div>
+    <label className="checkbox">
+      <input
+        className="checkbox__element checkbox__element_type_default"
+        type="checkbox"
+        checked={isChecked}
+        onChange={checkHandler}
+      />
+      <span className=" checkbox__element checkbox__element_type_custom" />
+      Короткометражки
+    </label>
   );
 }
 

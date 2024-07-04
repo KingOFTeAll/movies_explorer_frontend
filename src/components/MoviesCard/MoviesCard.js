@@ -1,58 +1,57 @@
-import './MoviesCard.css';
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import "./MoviesCard.css";
+import { useLocation } from "react-router-dom";
+import { moviesUrl } from "../../config/config";
+import MovieCardButton from "./MovieCardButton/MovieCardButton";
+import { convertingDuration } from "../../utils/utils";
 
-function MoviesCard(props) {
-  const [isSaved, setIsSaved] = React.useState(false);
-  const timeToStr = (min) =>
-    `${Math.floor(min / 60) > 0 ? Math.floor(min / 60) + 'ч' : ''}${
-      min % 60 > 0 ? ' ' + (min % 60) + 'м' : ''
-    }`;
+function MoviesCard({ movieData, onSave, isSaved, onRemove }) {
+  const location = useLocation();
+  const moviePage = location.pathname === "/movies"
 
-  const { trailerLink, image, nameRU, duration, saved } = props.movie;
+  const [isSave, setIsSave] = useState(false);
 
-  function handleLikeClick() {
-    props.handleLikeClick(props.movie);
+  function saveMovieHandler() {
+    onSave();
   }
 
-  function handleDeleteClick() {
-    props.handleDeleteClick(props.movie);
+  function deleteMovieHandler() {
+    onRemove();
   }
+
+  useEffect(() => {
+    if (isSaved) {
+      const result = isSaved.some((item) => (movieData.id) === item.movieId)
+      setIsSave(result);
+    }
+  }, [isSaved])
 
   return (
-    <li className='movies-card'>
-      {props.drawSaved ? (
-        <button
-          type='button'
-          onClick={handleDeleteClick}
-          disabled={props.fetching}
-          className='movies-card__delete-button button-transparency'
-          aria-label='Удалить'
-        ></button>
-      ) : (
-        <button
-          type='button'
-          onClick={handleLikeClick}
-          disabled={props.fetching}
-          className={`movies-card__like-button ${
-            saved && 'movies-card__like-button_active'
-          } button-transparency`}
-          aria-label={`${props.movie.saved ? 'Удалить' : 'Сохранить'}`}
-        ></button>
-      )}
-      <NavLink to={trailerLink} target='_blank'>
+    <li className="movie-card">
+      <a
+        className="movie-card__trailer"
+        href={movieData.trailerLink}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <img
-          src={image}
-          onClick={() => {}}
-          className='movies-card__item-image'
-          alt={`Изображение ${nameRU}`}
+          className="movie-card__image"
+          alt={movieData.nameRu}
+          src={moviePage ? `${moviesUrl}/${movieData.image.url}` : movieData.image}
         />
-      </NavLink>
-      <div className='movies-card__item-info'>
-        <div className='movies-card__like-div'>
-          <h2 className='movies-card__item-title'>{nameRU}</h2>
-        </div>
-        <p className='movies-card__duration'>{timeToStr(duration)}</p>
+      </a>
+      <MovieCardButton
+        type={moviePage ? isSave ? "movie-card-button_type_save" : "movie-card-button" : "movie-card-button_type_remove"}
+        onClickHandler={
+          moviePage ? isSave ? deleteMovieHandler : saveMovieHandler : deleteMovieHandler
+        }
+      >
+      </MovieCardButton>
+      <div className="movie-card__description">
+        <p className="movie-card__name">{movieData.nameRU}</p>
+        <span className="movie-card__duration">
+          {convertingDuration(movieData.duration)}
+        </span>
       </div>
     </li>
   );
