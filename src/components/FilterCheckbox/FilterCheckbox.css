@@ -1,0 +1,48 @@
+.checkbox {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 18px;
+	margin: 30px auto 0;
+}
+
+.checkbox__element_type_default {
+	position: absolute;
+	width: 0;
+	height: 0;
+	opacity: 0;
+}
+
+.checkbox__element_type_custom {
+	position: relative;
+	display: inline-block;
+	width: 36px;
+	height: 20px;
+	border-radius: 20px;
+	vertical-align: sub;
+	margin-right: 12px;
+}
+
+.checkbox__element_type_custom::before {
+	position: absolute;
+	content: '';
+	width: 36px;
+	height: 20px;
+	background-image: url('../../images/filter-checkbox-tumbler-off.svg');
+	transition: all .3s ease-in-out;
+}
+
+
+.checkbox__element_type_default:checked + .checkbox__element_type_custom::before {
+	background-image: url('../../images/filter-checkbox-tumbler-on.svg');
+}
+
+@media screen and (max-width: 544px) {
+	.checkbox {
+		font-size: 11px;
+		margin: 44px auto 0;
+	}
+
+	.checkbox__element_type_custom {
+		margin-right: 13px;
+	}
+}
